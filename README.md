@@ -25,3 +25,16 @@ A Python implementation of a genetic algorithm designed to efficiently solve the
   - Each child may randomly reposition one queen to increase diversity.
 - Cooling Schedule (Extended Version):
   - Simulated annealing approach where mutation and crossover rates are scaled down during learning.
+ 
+## Customization
+- The expermient performance can be tweaked through several parameters:
+  - Board Size: Set board_size to any integer n >= 4.
+  - Population Size: Controls the number of individuals per generation.
+  - Selection Subset Size: Determines tournament selection pressure (default is 4).
+  - Mutation Rate: Increase to explore more variants early in search.
+  - Crossover Rate: Controls how aggressively solutions recombine.
+  - Cooling Factor (d): Used in the simulated annealing-inspired schedule.
+ 
+## Licence
+This project is licensed under the MIT License.
+
