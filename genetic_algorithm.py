@@ -91,105 +91,105 @@ class GeneticAlgorithm:
         return best_performance, self.population[best_index], run_counter
     
 
-    class GeneticAlgorithmModified:
-        """Solves the n Queens problem by implementing a genetic algorithm"""
-        def __init__(self, n=8, 
-                    population=None, pop_size=10,
-                    mut_rate=0.75, recomb_rate=1,
-                    max_runs=2400,
-                    d=1):
-            self.n = n
-            self.mut_rate = mut_rate
-            self.recomb_rate = recomb_rate
-            self.pop_size = pop_size
-            self.max_runs = max_runs
-            self.temp = 1
-            self.d = d
-            
-            # Creates a list of length pop_size containing Eight Queens Puzzles  
-            if population==None:
-                self.population=[EightQueensStateModified(self.n) for _ in range(pop_size)]
+class GeneticAlgorithmModified:
+    """Solves the n Queens problem by implementing a genetic algorithm"""
+    def __init__(self, n=8, 
+                population=None, pop_size=10,
+                mut_rate=0.75, recomb_rate=1,
+                max_runs=2400,
+                d=1):
+        self.n = n
+        self.mut_rate = mut_rate
+        self.recomb_rate = recomb_rate
+        self.pop_size = pop_size
+        self.max_runs = max_runs
+        self.temp = 1
+        self.d = d
         
-        # Implements recombination by iterating through the population
-        # two adjustent parents are chosen to create child constellation
-        def recomb(self):
-            for i in range(len(self.population)-1):
-                if i % 2 == 0:
-                    if np.random.rand() < self.recomb_rate * self.temp:
-                        # Determins index of recombination
-                        rec = np.random.randint(1, self.population[i].n)
-                        
-                        # Copies array to list, performs recombination
-                        state1 = self.population[i].state.tolist()
-                        state2 = self.population[i+1].state.tolist()
-                        state1[:rec], state2[:rec] = state2[:rec], state1[:rec]
-                        
-                        # Safes child arrays inplace
-                        self.population[i].state = np.array(state1)
-                        self.population[i+1].state = np.array(state2)
-                        self.population[i].fitness_value = self.population[i].fitness()
-                        self.population[i+1].fitness_value = self.population[i+1].fitness()
-                        
-                        # Finish algorithm if goal state is reached
-                        if self.population[i].fitness_value == self.population[i].max_fitness:
-                            return self.population[i].max_fitness, self.population[i+1]
-                        if self.population[i+1].fitness_value == self.population[i+1].max_fitness:
-                            return self.population[i+1].max_fitness, self.population[i+1]
+        # Creates a list of length pop_size containing Eight Queens Puzzles  
+        if population==None:
+            self.population=[EightQueensStateModified(self.n) for _ in range(pop_size)]
+    
+    # Implements recombination by iterating through the population
+    # two adjustent parents are chosen to create child constellation
+    def recomb(self):
+        for i in range(len(self.population)-1):
+            if i % 2 == 0:
+                if np.random.rand() < self.recomb_rate * self.temp:
+                    # Determins index of recombination
+                    rec = np.random.randint(1, self.population[i].n)
+                    
+                    # Copies array to list, performs recombination
+                    state1 = self.population[i].state.tolist()
+                    state2 = self.population[i+1].state.tolist()
+                    state1[:rec], state2[:rec] = state2[:rec], state1[:rec]
+                    
+                    # Safes child arrays inplace
+                    self.population[i].state = np.array(state1)
+                    self.population[i+1].state = np.array(state2)
+                    self.population[i].fitness_value = self.population[i].fitness()
+                    self.population[i+1].fitness_value = self.population[i+1].fitness()
+                    
+                    # Finish algorithm if goal state is reached
+                    if self.population[i].fitness_value == self.population[i].max_fitness:
+                        return self.population[i].max_fitness, self.population[i+1]
+                    if self.population[i+1].fitness_value == self.population[i+1].max_fitness:
+                        return self.population[i+1].max_fitness, self.population[i+1]
 
-        # Implements the mutation part of the genetic algorithm
-        def mutate(self):
-            for state in self.population:
-                state.mutate(self.mut_rate*self.temp)
-                
-        # Performs natural selection on the population to create new population
-        def create_new_pop(self):
-            new_pop = []
+    # Implements the mutation part of the genetic algorithm
+    def mutate(self):
+        for state in self.population:
+            state.mutate(self.mut_rate*self.temp)
             
+    # Performs natural selection on the population to create new population
+    def create_new_pop(self):
+        new_pop = []
+        
+        
+        for j in range(self.pop_size//5):
+            # Chooses a random subpopulation of 4
+            sub_population = random.choices(self.population, k=4)
+        
+            # Determines the fitness of the subpopulation
+            for i in range(5):
+                chosen_state = sub_population[0]
+                max_fitness_value = chosen_state.fitness_value
+                for state in sub_population[1:]:
+                    if state.fitness_value > chosen_state.fitness_value:
+                        chosen_state = state
+                        max_fitness_value = state.fitness_value
+                
+                # Picks state with highest fitness
+                new_pop.append(chosen_state)
+                
+        if max([state.fitness_value for state in new_pop]) < (chosen_state.max_fitness - self.n):
+            self.population = [EightQueensStateModified(self.n) for _ in range(self.pop_size)]
+        else:
+            self.population = new_pop         
+                
+    # Runs all aspects of the genetic algorithm
+    def run(self):
+        best_performance = 0
+        run_counter = 0
+        temperature = 1 - (run_counter)
+        while best_performance != 28 and run_counter != self.max_runs:
             
-            for j in range(self.pop_size//5):
-                # Chooses a random subpopulation of 4
-                sub_population = random.choices(self.population, k=4)
+            # Performs natural selection on the population
+            self.create_new_pop()
             
-                # Determines the fitness of the subpopulation
-                for i in range(5):
-                    chosen_state = sub_population[0]
-                    max_fitness_value = chosen_state.fitness_value
-                    for state in sub_population[1:]:
-                        if state.fitness_value > chosen_state.fitness_value:
-                            chosen_state = state
-                            max_fitness_value = state.fitness_value
-                    
-                    # Picks state with highest fitness
-                    new_pop.append(chosen_state)
-                    
-            if max([state.fitness_value for state in new_pop]) < (chosen_state.max_fitness - self.n):
-                self.population = [EightQueensStateModified(self.n) for _ in range(self.pop_size)]
-            else:
-                self.population = new_pop         
-                    
-        # Runs all aspects of the genetic algorithm
-        def run(self):
-            best_performance = 0
-            run_counter = 0
-            temperature = 1 - (run_counter)
-            while best_performance != 28 and run_counter != self.max_runs:
-                
-                # Performs natural selection on the population
-                self.create_new_pop()
-                
-                # Performs 1 cicles of recombination on the population
-                self.recomb()
-                
-                # Performs 1 mutation cicle on the population
-                self.mutate()
-                
-                # Finds best performing child state
-                best_index = np.argmax([state.fitness_value for state in self.population])
-                best_performance = self.population[best_index].fitness_value
-                run_counter += 1
-                
-                # Update temperature
-                if run_counter > 1:
-                    self.temp = self.d / np.log(run_counter)
-                
-            return best_performance, self.population[best_index]
+            # Performs 1 cicles of recombination on the population
+            self.recomb()
+            
+            # Performs 1 mutation cicle on the population
+            self.mutate()
+            
+            # Finds best performing child state
+            best_index = np.argmax([state.fitness_value for state in self.population])
+            best_performance = self.population[best_index].fitness_value
+            run_counter += 1
+            
+            # Update temperature
+            if run_counter > 1:
+                self.temp = self.d / np.log(run_counter)
+            
+        return best_performance, self.population[best_index]
