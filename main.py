@@ -3,7 +3,7 @@ import random
 import cProfile
 from datetime import datetime
 from genetic_algorithm import GeneticAlgorithm, GeneticAlgorithmModified
-from eight_queens_puzzle import EightQueensState
+from eight_queens_puzzle import EightQueensState, EightQueensStateModified
 
 
 if __name__ == "__main__":
@@ -84,6 +84,20 @@ if __name__ == "__main__":
                 best_performance, best_state = my_alg.run()
             if best_state.state not in solutions:
                 solutions.append(best_state.state)
+        solutions_found[board_size] = solutions
+        delta = datetime.now() - t1
+        print(f"All solutions for n: {board_size} found! Time needed: {delta.total_seconds()}")
+
+
+    # Finding solutions only with random rearrangement
+    solutions_found = {}
+    for board_size in [4, 5, 6]:
+        t1 = datetime.now()
+        solutions = []
+        while len(solutions) != solution_dictionary[board_size]:
+            random_puzzle = EightQueensStateModified(board_size)
+            if random_puzzle.is_goal() and random_puzzle.state not in solutions:
+                solutions.append(random_puzzle.state.state)
         solutions_found[board_size] = solutions
         delta = datetime.now() - t1
         print(f"All solutions for n: {board_size} found! Time needed: {delta.total_seconds()}")
