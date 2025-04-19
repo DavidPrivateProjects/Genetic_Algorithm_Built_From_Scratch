@@ -10,6 +10,11 @@ A Python implementation of a genetic algorithm designed to efficiently solve the
 - Configurable mutation/crossover rates and population parameters.
 - Visualization and logging support for analysis and debugging (optional).
 
+## Performance
+- Average Time (5 runs): 8.59 ± 3.92 seconds
+- Best Time: ~2 seconds
+- Worst Case: < 30 seconds
+
 ## How It Works
 - Initialization:
   - Starts with a randomly generated or semi-optimized population of chess boards.
